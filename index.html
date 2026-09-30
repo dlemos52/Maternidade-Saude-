@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maternidade Saúde +</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2pdf.js for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @keyframes pulse-pink {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: 0.85; }
+        }
+        .animate-heart-pulse {
+            animation: pulse-pink 1.5s infinite ease-in-out;
+        }
+
+        @keyframes float-stork {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(2deg); }
+        }
+        .animate-stork {
+            animation: float-stork 4s infinite ease-in-out;
+        }
+
+        /* Animação do Batimento das Asas */
+        @keyframes flap-wing-left {
+            0%, 100% { transform: rotate(0deg) scaleY(1); }
+            50% { transform: rotate(-35deg) skewX(-15deg) scaleY(0.75); }
+        }
+        @keyframes flap-wing-right {
+            0%, 100% { transform: rotate(0deg) scaleY(1); }
+            50% { transform: rotate(35deg) skewX(15deg) scaleY(0.75); }
+        }
+        .wing-left {
+            animation: flap-wing-left 0.8s infinite ease-in-out;
+            transform-origin: 90px 115px;
+        }
+        .wing-right {
+            animation: flap-wing-right 0.8s infinite ease-in-out;
+            transform-origin: 100px 115px;
+        }
+
+        @keyframes drift-cloud-slow {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(300%); }
+        }
+        @keyframes drift-cloud-fast {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(350%); }
+        }
+        .animate-cloud-slow {
+            animation: drift-cloud-slow 25s linear infinite;
+        }
+        .animate-cloud-fast {
+            animation: drift-cloud-fast 16s linear infinite;
+        }
+
+        .risk-badge-verde { background-color: #22c55e; color: white; }
+        .risk-badge-azul { background-color: #3b82f6; color: white; }
+        .risk-badge-amarelo { background-color: #eab308; color: black; }
+        .risk-badge-vermelho { background-color: #ef4444; color: white; }
+
+        .hidden-view { display: none !important; }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans min-h-screen text-slate-800 flex flex-col">
+
+    <!-- MODAL DE MENSAGEM ELEGANTE E CENTRALIZADO -->
+    <div id="customAlertModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden transition-all duration-300">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 max-w-sm w-full mx-4 border border-rose-100 text-center relative transform transition-all scale-100">
+            <div id="alertModalIconBg" class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
+                <i id="alertModalIcon" class="fa-solid fa-check text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-800 mb-2" id="customAlertTitle">Sucesso!</h3>
+            <p class="text-slate-600 text-sm mb-6 leading-relaxed" id="customAlertMessage">
+                Operação realizada com sucesso.
+            </p>
+            <button onclick="closeCustomAlert()" class="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-semibold px-6 py-2.5 rounded-xl shadow-md transition w-full text-xs">
+                OK
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL SUPORTE TI -->
+    <div id="tiAlertModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 max-w-md w-full mx-4 border border-rose-100 text-center relative">
+            <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
+                <i class="fa-solid fa-headset"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">Suporte de TI</h3>
+            <p class="text-slate-600 text-sm mb-6">
+                Por favor, entre em contato com o Suporte de TI para realizar esta operação.<br>
+                <strong class="text-rose-600 text-lg flex items-center justify-center gap-2 mt-3 font-bold">
+                    <i class="fa-solid fa-phone"></i> 21 99028-8979
+                </strong>
+            </p>
+            <button onclick="closeTiAlert()" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold px-6 py-2.5 rounded-xl transition w-full text-xs">
+                Entender e Fechar
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="appContainer" class="flex-1 flex flex-col min-h-screen">
+
+        <!-- AUTH SCREEN -->
+        <div id="authScreen" class="flex-1 flex items-center justify-center p-4 bg-gradient-to-br from-rose-50 via-slate-50 to-pink-100">
+            <div class="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-rose-100/50 flex flex-col md:flex-row min-h-[620px] relative">
+                
+                <!-- STORK BRANDING PANEL -->
+                <div id="storkPanel" class="w-full md:w-1/2 bg-gradient-to-b from-sky-400 via-sky-300 to-rose-200 p-8 flex flex-col items-center justify-center text-white relative overflow-hidden transition-all duration-700 order-1">
+                    <div class="absolute inset-0 pointer-events-none opacity-40">
+                        <div class="absolute top-10 left-0 animate-cloud-slow">
+                            <i class="fa-solid fa-cloud text-white text-6xl"></i>
+                        </div>
+                        <div class="absolute top-36 left-0 animate-cloud-fast">
+                            <i class="fa-solid fa-cloud text-white text-4xl"></i>
+                        </div>
+                        <div class="absolute bottom-16 left-0 animate-cloud-slow" style="animation-delay: -10s;">
+                            <i class="fa-solid fa-cloud text-white text-5xl"></i>
+                        </div>
+                    </div>
+
+                    <div class="text-center z-10 relative">
+                        <div class="animate-stork mb-6 inline-block drop-shadow-2xl">
+                            <svg class="w-52 h-52 md:w-64 md:h-64 mx-auto" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Corpo da Cegonha -->
+                                <path d="M 50 110 Q 70 140 100 125 Q 130 110 160 110 L 150 125 Q 110 120 80 140 Q 55 145 50 110 Z" fill="#ffffff" filter="drop-shadow(0px 4px 6px rgba(0,0,0,0.1))"/>
+                                <!-- Cauda / Penas Pretas -->
+                                <path d="M 120 105 L 175 75 L 180 82 L 130 115 Z" fill="#1e293b"/>
+                                <!-- Pescoço e Cabeça -->
+                                <path d="M 55 115 Q 25 105 35 70 Q 40 50 55 50 Q 65 65 60 85 Z" fill="#ffffff"/>
+                                <circle cx="52" cy="58" r="12" fill="#ffffff"/>
+                                <circle cx="50" cy="56" r="2.5" fill="#1e293b"/>
+                                <!-- Bico -->
+                                <path d="M 42 60 L 10 66 L 42 72 Z" fill="#f97316"/>
+                                <!-- Pernas -->
+                                <path d="M 80 130 L 85 175 L 78 175 L 75 132 Z" fill="#ea580c"/>
+                                <path d="M 95 126 L 100 175 L 93 175 L 90 128 Z" fill="#ea580c"/>
+                                
+                                <!-- Asa Esquerda Animada -->
+                                <g class="wing-left">
+                                    <path d="M 85 115 Q 40 80 15 35 Q 50 45 95 95 Z" fill="#ffffff" filter="drop-shadow(-2px 2px 3px rgba(0,0,0,0.15))"/>
+                                    <path d="M 35 50 Q 25 40 15 35 Q 35 55 55 70 Z" fill="#1e293b"/>
+                                </g>
+
+                                <!-- Asa Direita Animada -->
+                                <g class="wing-right">
+                                    <path d="M 95 115 Q 135 70 175 25 Q 145 45 90 95 Z" fill="#f8fafc" filter="drop-shadow(2px 2px 3px rgba(0,0,0,0.15))"/>
+                                    <path d="M 150 40 Q 165 30 175 25 Q 150 55 125 75 Z" fill="#1e293b"/>
+                                </g>
+
+                                <!-- Trouxinha / Bebê -->
+                                <g transform="translate(18, 68)">
+                                    <path d="M -10 0 Q 0 35 15 0 Z" fill="#38bdf8"/>
+                                    <circle cx="2" cy="8" r="7" fill="#fde047"/>
+                                    <circle cx="0" cy="6" r="1.2" fill="#1e293b"/>
+                                    <circle cx="4" cy="6" r="1.2" fill="#1e293b"/>
+                                    <path d="M 0 10 Q 2 12 4 10" stroke="#1e293b" stroke-width="1" fill="none"/>
+                                </g>
+                            </svg>
+                        </div>
+                        <h1 class="text-3xl font-extrabold tracking-tight mb-2 text-slate-900 drop-shadow-sm flex items-center justify-center whitespace-nowrap">
+                            Maternidade Saúde <span class="text-rose-600 ml-1">+</span>
+                        </h1>
+                        <p class="text-slate-700 font-medium text-xs max-w-xs mx-auto drop-shadow-sm">
+                            Cuidado maternal e tecnologia a serviço da vida.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FORM PANEL -->
+                <div id="formPanel" class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center order-2 transition-all duration-700">
+                    
+                    <!-- LOGIN FORM -->
+                    <div id="loginFormContainer" class="w-full max-w-md mx-auto">
+                        <div class="text-center mb-6">
+                            <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-rose-100 text-rose-600 mb-2">
+                                <i class="fa-solid fa-lock text-xl"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-slate-800">Acesso Restrito</h2>
+                            <p class="text-slate-500 text-xs mt-1">Informe suas credenciais para continuar</p>
+                        </div>
+
+                        <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Usuário</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-rose-500">
+                                        <i class="fa-solid fa-user"></i>
+                                    </div>
+                                    <input type="text" id="loginUser" required placeholder="Digite seu usuário"
+                                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-400 focus:outline-none transition text-sm">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Senha</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-amber-500">
+                                        <i class="fa-solid fa-key"></i>
+                                    </div>
+                                    <input type="password" id="loginPass" required placeholder="Digite sua senha"
+                                        class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-400 focus:outline-none transition text-sm">
+                                    <button type="button" onclick="togglePasswordVisibility('loginPass', 'eyeIconLogin')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
+                                        <i id="eyeIconLogin" class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between text-xs pt-1">
+                                <button type="button" onclick="showForgotPasswordAlert()" class="text-rose-600 hover:underline font-medium">
+                                    Esqueceu a senha?
+                                </button>
+                                <button type="button" onclick="switchToRegisterView()" class="text-slate-500 hover:text-rose-600 font-medium">
+                                    Se cadastrar? <span class="text-rose-600 underline font-bold cursor-pointer">Clique aqui!</span>
+                                </button>
+                            </div>
+
+                            <button type="submit" class="w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition transform active:scale-[0.98] text-sm mt-2">
+                                Entrar no Sistema
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- REGISTER FORM -->
+                    <div id="registerFormContainer" class="w-full max-w-md mx-auto hidden">
+                        <div class="text-center mb-4">
+                            <h2 class="text-2xl font-bold text-slate-800">Novo Cadastro</h2>
+                            <p class="text-slate-500 text-xs">Preencha todos os campos obrigatórios</p>
+                        </div>
+
+                        <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-0.5">Nome Completo *</label>
+                                <input type="text" id="regName" required placeholder="Nome completo"
+                                    class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-0.5">Setor *</label>
+                                    <select id="regSector" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                        <option value="">Selecione...</option>
+                                        <option value="Registro">Registro</option>
+                                        <option value="Classificação de Risco">Classificação de Risco</option>
+                                        <option value="TI">TI</option>
+                                        <option value="Médico">Médico</option>
+                                        <option value="Enfermagem">Enfermagem</option>
+                                        <option value="Acalanto">Acalanto</option>
+                                        <option value="Cegonha">Cegonha</option>
+                                        <option value="Obstetra">Obstetra</option>
+                                        <option value="Anestesista">Anestesista</option>
+                                        <option value="Segurança">Segurança</option>
+                                        <option value="Ambulatório">Ambulatório</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-0.5">Telefone *</label>
+                                    <input type="text" id="regPhone" required placeholder="(21) 99999-9999" oninput="maskPhone(this)"
+                                        class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-0.5">Data e Hora do Cadastro</label>
+                                <input type="text" id="regDateTime" readonly class="w-full px-3 py-1.5 bg-slate-100 text-slate-500 border border-slate-200 rounded-lg text-xs">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-0.5">Login *</label>
+                                    <input type="text" id="regLogin" required placeholder="Usuário"
+                                        class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-0.5">Senha *</label>
+                                    <input type="password" id="regPass" required placeholder="Senha"
+                                        class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-rose-600 mb-0.5">Senha do Admin (Autorização) *</label>
+                                <input type="password" id="regAdminPass" required placeholder="Digite a senha do Admin (123)"
+                                    class="w-full px-3 py-1.5 bg-rose-50/50 border border-rose-200 rounded-lg text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                            </div>
+
+                            <div class="flex items-center justify-between pt-2">
+                                <button type="button" onclick="switchToLoginView()" class="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1">
+                                    <i class="fa-solid fa-arrow-left"></i> Voltar ao Login
+                                </button>
+                                <button type="submit" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow transition">
+                                    Efetuar Cadastro
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- DASHBOARD SYSTEM SCREEN -->
+        <div id="dashboardScreen" class="flex-1 flex flex-col hidden bg-slate-100">
+            
+            <!-- TOP NAVBAR -->
+            <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+                    
+                    <div class="flex items-center gap-2 cursor-pointer flex-shrink-0" onclick="showHomeDashboard()">
+                        <i class="fa-solid fa-heart text-pink-500 text-2xl animate-heart-pulse"></i>
+                        <span class="font-extrabold text-lg sm:text-xl text-slate-800 tracking-tight flex flex-nowrap items-center whitespace-nowrap">
+                            Maternidade Saúde <span class="text-rose-500 ml-1">+</span>
+                        </span>
+                    </div>
+
+                    <div class="flex-1 max-w-xs sm:max-w-md mx-2">
+                        <div class="relative">
+                            <input type="text" id="globalSearchInput" onkeyup="filterPatientList()" placeholder="Pesquisar por CPF ou Nome..."
+                                class="w-full pl-9 pr-4 py-1.5 bg-slate-100 border border-slate-200 rounded-full text-xs focus:ring-2 focus:ring-rose-400 focus:bg-white outline-none transition">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+                        
+                        <div class="hidden lg:flex items-center gap-4 text-xs font-medium text-slate-600">
+                            <button onclick="showHomeDashboard()" class="hover:text-rose-600 flex items-center gap-1.5">
+                                <i class="fa-solid fa-house"></i> Home
+                            </button>
+
+                            <button id="adminNavBtn" onclick="openAdminDashboard()" class="hover:text-rose-600 flex items-center gap-1.5 hidden text-amber-600 font-bold">
+                                <i class="fa-solid fa-chart-line"></i> Painel Admin
+                            </button>
+
+                            <div class="relative group py-2">
+                                <button class="hover:text-rose-600 flex items-center gap-1">
+                                    <i class="fa-solid fa-id-card"></i> Cadastro <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                                </button>
+                                <div class="absolute top-full left-0 hidden group-hover:block w-48 bg-white border border-slate-200 rounded-xl shadow-lg p-1 z-40">
+                                    <button onclick="openPatientRegisterModule()" class="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-rose-50 hover:text-rose-600 rounded-lg flex items-center gap-2">
+                                        <i class="fa-solid fa-hospital-user text-rose-500"></i> Cadastro de Paciente
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="relative group py-2">
+                                <button class="hover:text-rose-600 flex items-center gap-1">
+                                    <i class="fa-solid fa-headset"></i> Suporte TI <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                                </button>
+                                <div class="absolute top-full left-0 hidden group-hover:block w-56 bg-white border border-slate-200 rounded-xl shadow-lg p-3 z-40 text-center">
+                                    <p class="text-[11px] text-slate-500 font-normal">Central de Atendimento TI:</p>
+                                    <p class="text-xs font-bold text-rose-600 mt-1 flex items-center justify-center gap-1">
+                                        <i class="fa-solid fa-phone"></i> 21 99028-8979
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-right hidden sm:block">
+                            <div class="text-[10px] text-slate-400 uppercase font-semibold">Seja bem-vindo</div>
+                            <div class="text-xs font-bold text-slate-700 flex items-center gap-1" id="navUserName">
+                                Usuario <span id="navUserSectorBadge" class="bg-rose-100 text-rose-700 text-[10px] px-1.5 py-0.5 rounded-md font-semibold">Setor</span>
+                            </div>
+                        </div>
+
+                        <button onclick="handleLogout()" class="bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-600 p-2 rounded-xl transition text-xs font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span class="hidden sm:inline">Sair</span>
+                        </button>
+                    </div>
+
+                </div>
+            </header>
+
+            <!-- DASHBOARD MAIN BODY -->
+            <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
+
+                <!-- HOME CARDS VIEW -->
+                <div id="homeCardsView" class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800">Painel Módulos</h2>
+                            <p class="text-xs text-slate-500">Selecione o setor para gerenciamento de atendimento</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="cardsGrid">
+                        <!-- Dynamic Cards -->
+                    </div>
+                </div>
+
+                <!-- ADMIN DASHBOARD PANEL -->
+                <div id="adminDashboardModule" class="hidden-view space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                        <div class="flex items-center gap-3">
+                            <button onclick="showHomeDashboard()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 p-2 rounded-xl text-xs">
+                                <i class="fa-solid fa-arrow-left"></i> Voltar
+                            </button>
+                            <h2 class="text-xl font-bold text-slate-800">Painel Administrativo & Analytics</h2>
+                        </div>
+                        <span class="text-xs bg-amber-100 text-amber-800 font-semibold px-3 py-1 rounded-full flex items-center gap-1">
+                            <i class="fa-solid fa-shield-halved"></i> Acesso Restrito
+                        </span>
+                    </div>
+
+                    <!-- KPI METRICS STATS -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400 uppercase">Total Pacientes</p>
+                                <h3 class="text-2xl font-black text-slate-800 mt-1" id="statTotalPatients">0</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-hospital-user"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400 uppercase">Triagens Concluídas</p>
+                                <h3 class="text-2xl font-black text-slate-800 mt-1" id="statTriagedCount">0</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-notes-medical"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400 uppercase">Urgência Vermelha</p>
+                                <h3 class="text-2xl font-black text-red-600 mt-1" id="statRedAlerts">0</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400 uppercase">Usuários Sistema</p>
+                                <h3 class="text-2xl font-black text-slate-800 mt-1" id="statTotalUsers">0</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ANALYTICS DISTRIBUTION BAR -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- RISK CLASSIFICATION STATS -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-chart-pie text-rose-500"></i> Distribuição por Classificação de Risco
+                            </h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold mb-1">
+                                        <span class="text-emerald-600">Verde (Pouco Urgente)</span>
+                                        <span id="cntVerde">0</span>
+                                    </div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                                        <div id="barVerde" class="bg-emerald-500 h-2.5 rounded-full" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold mb-1">
+                                        <span class="text-blue-600">Azul (Não Urgente)</span>
+                                        <span id="cntAzul">0</span>
+                                    </div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                                        <div id="barAzul" class="bg-blue-500 h-2.5 rounded-full" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold mb-1">
+                                        <span class="text-amber-600">Amarelo (Urgente)</span>
+                                        <span id="cntAmarelo">0</span>
+                                    </div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                                        <div id="barAmarelo" class="bg-amber-500 h-2.5 rounded-full" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold mb-1">
+                                        <span class="text-red-600">Vermelho (Emergência)</span>
+                                        <span id="cntVermelho">0</span>
+                                    </div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                                        <div id="barVermelho" class="bg-red-500 h-2.5 rounded-full" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTORS ACTIVITY STATS -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-network-wired text-indigo-500"></i> Resumo de Atividade dos Setores
+                            </h3>
+                            <div class="grid grid-cols-2 gap-3 text-xs" id="adminSectorStatsList">
+                                <!-- Dynamic JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- USERS MANAGEMENT TABLE -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-user-gear text-slate-600"></i> Usuários Cadastrados no Sistema
+                            </h3>
+                            <button onclick="switchToRegisterView()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-plus"></i> Novo Usuário
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="bg-slate-100/80 text-slate-600 border-b border-slate-200 uppercase font-semibold">
+                                        <th class="p-3">Nome</th>
+                                        <th class="p-3">Usuário / Login</th>
+                                        <th class="p-3">Setor</th>
+                                        <th class="p-3">Telefone</th>
+                                        <th class="p-3">Data Cadastro</th>
+                                        <th class="p-3 text-center">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody" class="divide-y divide-slate-100 text-slate-700">
+                                    <!-- Dynamic Content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- PATIENT REGISTRATION MODULE -->
+                <div id="patientRegisterModule" class="hidden-view space-y-6">
+                    
+                    <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                        <div class="flex items-center gap-3">
+                            <button onclick="showHomeDashboard()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 p-2 rounded-xl text-xs">
+                                <i class="fa-solid fa-arrow-left"></i> Voltar
+                            </button>
+                            <h2 class="text-xl font-bold text-slate-800">Cadastro de Paciente</h2>
+                        </div>
+                        <span class="text-xs bg-rose-100 text-rose-700 font-semibold px-3 py-1 rounded-full">Recepção / Registro</span>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                        <form id="patientForm" onsubmit="handleSavePatient(event)" class="space-y-4">
+                            <input type="hidden" id="patientEditIndex" value="-1">
+
+                            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                                
+                                <div class="lg:col-span-3 space-y-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nome Completo *</label>
+                                            <input type="text" id="patFullName" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nome Social</label>
+                                            <input type="text" id="patSocialName" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Raça / Cor *</label>
+                                            <select id="patRace" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                                <option value="">Selecione...</option>
+                                                <option value="Branca">Branca</option>
+                                                <option value="Preta">Preta</option>
+                                                <option value="Parda">Parda</option>
+                                                <option value="Amarela">Amarela</option>
+                                                <option value="Indígena">Indígena</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Responsável *</label>
+                                            <input type="text" id="patGuardian" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">
+                                                Data Nasc. * <span id="patAgeLabel" class="text-rose-600 font-bold ml-1"></span>
+                                            </label>
+                                            <input type="date" id="patBirthDate" required onchange="calculateAge()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Telefone *</label>
+                                            <input type="text" id="patPhone" required placeholder="(21) 99999-9999" oninput="maskPhone(this)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">CPF *</label>
+                                            <input type="text" id="patCPF" required placeholder="000.000.000-00" oninput="maskCPF(this)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">RG *</label>
+                                            <input type="text" id="patRG" required placeholder="00.000.000-0" oninput="maskRG(this)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">CEP *</label>
+                                            <input type="text" id="patCEP" required placeholder="00000-000" oninput="maskCEP(this)" onblur="fetchAddressByCEP()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                        </div>
+                                        <div class="sm:col-span-2">
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Rua / Logradouro</label>
+                                            <input type="text" id="patStreet" class="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl text-xs outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Número *</label>
+                                            <input type="text" id="patNumber" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Bairro</label>
+                                            <input type="text" id="patNeighborhood" class="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl text-xs outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Cidade</label>
+                                            <input type="text" id="patCity" class="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl text-xs outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Data/Hora Cadastro</label>
+                                            <input type="text" id="patDateTime" readonly class="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-500">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col items-center justify-start border-l border-slate-100 pl-0 lg:pl-6 pt-4 lg:pt-0">
+                                    <label class="block text-xs font-semibold text-slate-600 mb-2">Foto do Paciente</label>
+                                    <div class="w-36 h-44 bg-slate-100 border-2 border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center text-slate-400 overflow-hidden relative mb-3">
+                                        <img id="patPhotoPreview" class="w-full h-full object-cover hidden" src="" alt="Foto Paciente">
+                                        <div id="patPhotoPlaceholder" class="text-center p-2">
+                                            <i class="fa-solid fa-camera text-3xl mb-1"></i>
+                                            <p class="text-[10px]">Sem Foto</p>
+                                        </div>
+                                    </div>
+                                    <input type="file" id="patPhotoInput" accept="image/*" class="hidden" onchange="handlePhotoUpload(event)">
+                                    <button type="button" onclick="document.getElementById('patPhotoInput').click()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-medium px-4 py-2 rounded-xl transition flex items-center gap-2">
+                                        <i class="fa-solid fa-folder-open"></i> Inserir Foto
+                                    </button>
+                                </div>
+
+                            </div>
+
+                            <div class="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                                <button type="button" onclick="clearPatientForm()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition">
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-6 py-2.5 rounded-xl transition shadow-md flex items-center gap-2">
+                                    <i class="fa-solid fa-floppy-disk"></i> Salvar Registro
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                            <h3 class="font-bold text-slate-800 text-sm">Lista de Pacientes Cadastrados</h3>
+                            <span class="text-xs text-slate-500" id="patientCountBadge">0 Pacientes</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="bg-slate-100/80 text-slate-600 border-b border-slate-200 uppercase font-semibold">
+                                        <th class="p-3">Foto</th>
+                                        <th class="p-3">Nome / CPF</th>
+                                        <th class="p-3">Telefone</th>
+                                        <th class="p-3">Responsável</th>
+                                        <th class="p-3">Classificação de Risco</th>
+                                        <th class="p-3 text-center">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="patientTableBody" class="divide-y divide-slate-100 text-slate-700">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- CLASSIFICAÇÃO DE RISCO MODULE -->
+                <div id="riskTriageModule" class="hidden-view space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                        <div class="flex items-center gap-3">
+                            <button onclick="showHomeDashboard()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 p-2 rounded-xl text-xs">
+                                <i class="fa-solid fa-arrow-left"></i> Voltar
+                            </button>
+                            <h2 class="text-xl font-bold text-slate-800">Classificação de Risco - Triagem</h2>
+                        </div>
+                        <span class="text-xs bg-amber-100 text-amber-800 font-semibold px-3 py-1 rounded-full">Triagem Médica</span>
+                    </div>
+
+                    <div id="triageFormCard" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hidden">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-notes-medical text-rose-500"></i>
+                                Avaliação de Risco - <span id="triagePatientName" class="text-rose-600">Paciente</span>
+                            </h3>
+                            <button onclick="closeTriageForm()" class="text-slate-400 hover:text-slate-600 text-xs">
+                                <i class="fa-solid fa-xmark text-lg"></i>
+                            </button>
+                        </div>
+
+                        <form id="triageEvaluationForm" onsubmit="handleSaveTriage(event)" class="space-y-4">
+                            <input type="hidden" id="triagePatientIndex" value="-1">
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="md:col-span-3">
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Sintomas / Queixa Principal *</label>
+                                    <textarea id="trgSymptoms" required rows="2" placeholder="Descreva os sintomas..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Pressão Arterial (PA) *</label>
+                                    <input type="text" id="trgBP" required placeholder="120/80 mmHg" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Peso (kg) *</label>
+                                    <input type="text" id="trgWeight" required placeholder="Ex: 65.5" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Altura (m) *</label>
+                                    <input type="text" id="trgHeight" required placeholder="Ex: 1.65" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Data/Hora Triagem</label>
+                                    <input type="text" id="trgDateTime" readonly class="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-500">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Cor da Classificação de Risco *</label>
+                                    <div class="grid grid-cols-4 gap-2">
+                                        <label class="cursor-pointer border-2 border-emerald-500 rounded-xl p-2 text-center bg-emerald-50 text-emerald-800 text-xs font-bold hover:bg-emerald-100">
+                                            <input type="radio" name="trgColor" value="Verde" required class="hidden">
+                                            Verde
+                                        </label>
+                                        <label class="cursor-pointer border-2 border-blue-500 rounded-xl p-2 text-center bg-blue-50 text-blue-800 text-xs font-bold hover:bg-blue-100">
+                                            <input type="radio" name="trgColor" value="Azul" class="hidden">
+                                            Azul
+                                        </label>
+                                        <label class="cursor-pointer border-2 border-yellow-500 rounded-xl p-2 text-center bg-yellow-50 text-yellow-800 text-xs font-bold hover:bg-yellow-100">
+                                            <input type="radio" name="trgColor" value="Amarelo" class="hidden">
+                                            Amarelo
+                                        </label>
+                                        <label class="cursor-pointer border-2 border-red-500 rounded-xl p-2 text-center bg-red-50 text-red-800 text-xs font-bold hover:bg-red-100">
+                                            <input type="radio" name="trgColor" value="Vermelho" class="hidden">
+                                            Vermelho
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Encaminhamento Sala Médica *</label>
+                                    <select id="trgMedicalRoom" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                        <option value="">Selecione a Sala Médica...</option>
+                                        <option value="Sala Médica A">Sala Médica A</option>
+                                        <option value="Sala Médica B">Sala Médica B</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                                <button type="button" onclick="closeTriageForm()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition">
+                                    Cancelar
+                                </button>
+                                <button type="button" onclick="printTriagePDF()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-1.5">
+                                    <i class="fa-solid fa-print"></i> Imprimir PDF
+                                </button>
+                                <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-6 py-2.5 rounded-xl transition shadow-md flex items-center gap-1.5">
+                                    <i class="fa-solid fa-floppy-disk"></i> Salvar Classificação
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                            <h3 class="font-bold text-slate-800 text-sm">Fila de Aguardo para Triagem / Avaliados</h3>
+                            <span class="text-xs text-slate-500" id="triageCountBadge">0 Registros</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="bg-slate-100/80 text-slate-600 border-b border-slate-200 uppercase font-semibold">
+                                        <th class="p-3">Paciente</th>
+                                        <th class="p-3">CPF</th>
+                                        <th class="p-3">Idade</th>
+                                        <th class="p-3">Status / Cor</th>
+                                        <th class="p-3">Sala Destino</th>
+                                        <th class="p-3 text-center">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="triageTableBody" class="divide-y divide-slate-100 text-slate-700">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- GENERIC SECTOR VIEW -->
+                <div id="genericSectorView" class="hidden-view space-y-6">
+                    <div class="flex items-center gap-3 border-b border-slate-200 pb-4">
+                        <button onclick="showHomeDashboard()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 p-2 rounded-xl text-xs">
+                            <i class="fa-solid fa-arrow-left"></i> Voltar
+                        </button>
+                        <h2 class="text-xl font-bold text-slate-800" id="genericSectorTitle">Setor</h2>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center max-w-lg mx-auto space-y-4">
+                        <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+                            <i class="fa-solid fa-hospital-user"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800">Módulo Ativo</h3>
+                        <p class="text-xs text-slate-500">
+                            Acesso autorizado para o perfil atual. Gerenciamento interno de atendimentos.
+                        </p>
+                        <button onclick="showHomeDashboard()" class="bg-rose-600 text-white text-xs font-semibold px-4 py-2 rounded-xl">
+                            Retornar ao Painel Inicial
+                        </button>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+
+    </div>
+
+    <!-- HIDDEN PDF PRINT CONTAINER -->
+    <div id="pdfPrintArea" class="hidden p-8 bg-white font-sans text-slate-900 text-xs"></div>
+
+    <script>
+        // GLOBAL STATE & LOCAL STORAGE INITIALIZATION (LocalStorage ativado para persistência de dados)
+        let currentUser = null;
+        let patients = JSON.parse(localStorage.getItem('maternidade_patients')) || [];
+        let systemUsers = JSON.parse(localStorage.getItem('maternidade_users')) || [
+            { name: 'Administrador', sector: 'TI', phone: '21990288979', dateTime: '30/09/2026 00:00:00', login: 'admin', pass: '123' },
+            { name: 'Demilson', sector: 'TI', phone: '21990288979', dateTime: '30/09/2026 00:00:00', login: 'Demilson', pass: '123' }
+        ];
+
+        const SECTORS_LIST = [
+            { name: 'Cadastro de Paciente', key: 'Registro', icon: 'fa-hospital-user' },
+            { name: 'Classificação de Risco', key: 'Classificação de Risco', icon: 'fa-triangle-exclamation' },
+            { name: 'Médico', key: 'Médico', icon: 'fa-user-doctor' },
+            { name: 'Medicação', key: 'Medicação', icon: 'fa-pills' },
+            { name: 'Acalanto', key: 'Acalanto', icon: 'fa-baby' },
+            { name: 'Cegonha', key: 'Cegonha', icon: 'fa-feather-pointed' },
+            { name: 'Internação', key: 'Internação', icon: 'fa-bed' },
+            { name: 'Direção', key: 'Direção', icon: 'fa-user-tie' },
+            { name: 'Ambulatório', key: 'Ambulatório', icon: 'fa-clinic-medical' }
+        ];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateRegisterDateTime();
+            renderCardsGrid();
+        });
+
+        function showCustomAlert(title, message, type = 'success') {
+            const modal = document.getElementById('customAlertModal');
+            const titleEl = document.getElementById('customAlertTitle');
+            const msgEl = document.getElementById('customAlertMessage');
+            const iconBg = document.getElementById('alertModalIconBg');
+            const icon = document.getElementById('alertModalIcon');
+
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+
+            if (type === 'success') {
+                iconBg.className = "w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner";
+                icon.className = "fa-solid fa-check text-2xl";
+            } else if (type === 'error') {
+                iconBg.className = "w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner";
+                icon.className = "fa-solid fa-circle-exclamation text-2xl";
+            } else {
+                iconBg.className = "w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner";
+                icon.className = "fa-solid fa-triangle-exclamation text-2xl";
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeCustomAlert() {
+            document.getElementById('customAlertModal').classList.add('hidden');
+        }
+
+        function updateRegisterDateTime() {
+            const now = new Date().toLocaleString('pt-BR');
+            const regDT = document.getElementById('regDateTime');
+            const patDT = document.getElementById('patDateTime');
+            const trgDT = document.getElementById('trgDateTime');
+            if (regDT) regDT.value = now;
+            if (patDT) patDT.value = now;
+            if (trgDT) trgDT.value = now;
+        }
+
+        function isFullAccessUser() {
+            if (!currentUser) return false;
+            const userSector = (currentUser.sector || '').toUpperCase();
+            const userLogin = (currentUser.login || '').toUpperCase();
+            return userLogin === 'ADMIN' || userSector === 'TI';
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const userVal = document.getElementById('loginUser').value.trim();
+            const passVal = document.getElementById('loginPass').value.trim();
+
+            const foundUser = systemUsers.find(u => 
+                (u.login.toLowerCase() === userVal.toLowerCase() || u.name.toLowerCase() === userVal.toLowerCase()) && 
+                u.pass === passVal
+            );
+
+            if (foundUser) {
+                currentUser = foundUser;
+                document.getElementById('authScreen').classList.add('hidden');
+                document.getElementById('dashboardScreen').classList.remove('hidden');
+                
+                document.getElementById('navUserName').childNodes[0].nodeValue = currentUser.name + " ";
+                document.getElementById('navUserSectorBadge').textContent = currentUser.sector;
+
+                if (isFullAccessUser()) {
+                    document.getElementById('adminNavBtn').classList.remove('hidden');
+                } else {
+                    document.getElementById('adminNavBtn').classList.add('hidden');
+                }
+
+                renderCardsGrid();
+                renderPatientTable();
+                renderTriageTable();
+                showHomeDashboard();
+            } else {
+                showCustomAlert("Erro de Acesso", "Usuário ou senha incorretos!", "error");
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            document.getElementById('dashboardScreen').classList.add('hidden');
+            document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('loginForm').reset();
+        }
+
+        function switchToRegisterView() {
+            document.getElementById('loginFormContainer').classList.add('hidden');
+            document.getElementById('registerFormContainer').classList.remove('hidden');
+            
+            const storkPanel = document.getElementById('storkPanel');
+            const formPanel = document.getElementById('formPanel');
+            
+            storkPanel.classList.remove('order-1');
+            storkPanel.classList.add('order-2');
+            formPanel.classList.remove('order-2');
+            formPanel.classList.add('order-1');
+            
+            updateRegisterDateTime();
+        }
+
+        function switchToLoginView() {
+            document.getElementById('registerFormContainer').classList.add('hidden');
+            document.getElementById('loginFormContainer').classList.remove('hidden');
+            
+            const storkPanel = document.getElementById('storkPanel');
+            const formPanel = document.getElementById('formPanel');
+            
+            storkPanel.classList.remove('order-2');
+            storkPanel.classList.add('order-1');
+            formPanel.classList.remove('order-1');
+            formPanel.classList.add('order-2');
+        }
+
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = "password";
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const adminPass = document.getElementById('regAdminPass').value;
+            if (adminPass !== '123') {
+                showCustomAlert("Não Autorizado", "Senha do Admin incorreta! Digite a senha do Admin para prosseguir.", "error");
+                return;
+            }
+
+            const newUser = {
+                name: document.getElementById('regName').value,
+                sector: document.getElementById('regSector').value,
+                phone: document.getElementById('regPhone').value,
+                dateTime: document.getElementById('regDateTime').value,
+                login: document.getElementById('regLogin').value,
+                pass: document.getElementById('regPass').value
+            };
+
+            systemUsers.push(newUser);
+            localStorage.setItem('maternidade_users', JSON.stringify(systemUsers));
+            
+            document.getElementById('registerForm').reset();
+            switchToLoginView();
+            showCustomAlert("Sucesso", "Cadastro efetuado com sucesso!", "success");
+        }
+
+        function showForgotPasswordAlert() {
+            showTiAlertModal();
+        }
+
+        function showTiAlertModal() {
+            document.getElementById('tiAlertModal').classList.remove('hidden');
+        }
+
+        function closeTiAlert() {
+            document.getElementById('tiAlertModal').classList.add('hidden');
+        }
+
+        function renderCardsGrid() {
+            const grid = document.getElementById('cardsGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            const isFullAccess = isFullAccessUser();
+
+            SECTORS_LIST.forEach(sector => {
+                let isActive = isFullAccess;
+
+                if (!isFullAccess && currentUser) {
+                    if (currentUser.sector === 'Registro' && sector.key === 'Registro') {
+                        isActive = true;
+                    } else if (currentUser.sector === sector.key) {
+                        isActive = true;
+                    }
+                }
+
+                const card = document.createElement('div');
+                card.className = `p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between h-40 ${
+                    isActive 
+                        ? 'bg-white border-rose-200 shadow-sm hover:shadow-md cursor-pointer hover:border-rose-400 group' 
+                        : 'bg-slate-50 border-slate-200 opacity-60 cursor-not-allowed'
+                }`;
+
+                card.onclick = () => {
+                    if (isActive) {
+                        openSectorModule(sector.key);
+                    } else {
+                        showTiAlertModal();
+                    }
+                };
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${
+                            isActive ? 'bg-rose-100 text-rose-600 group-hover:scale-110 transition' : 'bg-slate-200 text-slate-400'
+                        }">
+                            <i class="fa-solid ${sector.icon}"></i>
+                        </div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                            isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'
+                        }">
+                            ${isActive ? 'Ativo' : 'Inativo'}
+                        </span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-0.5">${sector.name}</h3>
+                        <p class="text-[11px] text-slate-400">${isActive ? 'Clique para acessar' : 'Módulo Bloqueado'}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function showHomeDashboard() {
+            document.getElementById('homeCardsView').classList.remove('hidden-view');
+            document.getElementById('adminDashboardModule').classList.add('hidden-view');
+            document.getElementById('patientRegisterModule').classList.add('hidden-view');
+            document.getElementById('riskTriageModule').classList.add('hidden-view');
+            document.getElementById('genericSectorView').classList.add('hidden-view');
+        }
+
+        function openAdminDashboard() {
+            if (!isFullAccessUser()) {
+                showTiAlertModal();
+                return;
+            }
+            document.getElementById('homeCardsView').classList.add('hidden-view');
+            document.getElementById('patientRegisterModule').classList.add('hidden-view');
+            document.getElementById('riskTriageModule').classList.add('hidden-view');
+            document.getElementById('genericSectorView').classList.add('hidden-view');
+            document.getElementById('adminDashboardModule').classList.remove('hidden-view');
+
+            renderAdminMetrics();
+            renderUsersTable();
+        }
+
+        function renderAdminMetrics() {
+            const totalP = patients.length;
+            const triaged = patients.filter(p => p.riskColor && p.riskColor !== 'Pendente').length;
+            const redCnt = patients.filter(p => p.riskColor === 'Vermelho').length;
+            const verdeCnt = patients.filter(p => p.riskColor === 'Verde').length;
+            const azulCnt = patients.filter(p => p.riskColor === 'Azul').length;
+            const amareloCnt = patients.filter(p => p.riskColor === 'Amarelo').length;
+
+            document.getElementById('statTotalPatients').textContent = totalP;
+            document.getElementById('statTriagedCount').textContent = triaged;
+            document.getElementById('statRedAlerts').textContent = redCnt;
+            document.getElementById('statTotalUsers').textContent = systemUsers.length;
+
+            document.getElementById('cntVerde').textContent = `${verdeCnt} (${totalP ? Math.round((verdeCnt/totalP)*100) : 0}%)`;
+            document.getElementById('cntAzul').textContent = `${azulCnt} (${totalP ? Math.round((azulCnt/totalP)*100) : 0}%)`;
+            document.getElementById('cntAmarelo').textContent = `${amareloCnt} (${totalP ? Math.round((amareloCnt/totalP)*100) : 0}%)`;
+            document.getElementById('cntVermelho').textContent = `${redCnt} (${totalP ? Math.round((redCnt/totalP)*100) : 0}%)`;
+
+            document.getElementById('barVerde').style.width = totalP ? `${(verdeCnt/totalP)*100}%` : '0%';
+            document.getElementById('barAzul').style.width = totalP ? `${(azulCnt/totalP)*100}%` : '0%';
+            document.getElementById('barAmarelo').style.width = totalP ? `${(amareloCnt/totalP)*100}%` : '0%';
+            document.getElementById('barVermelho').style.width = totalP ? `${(redCnt/totalP)*100}%` : '0%';
+
+            const statsList = document.getElementById('adminSectorStatsList');
+            statsList.innerHTML = '';
+            SECTORS_LIST.forEach(s => {
+                statsList.innerHTML += `
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+                        <span class="font-semibold text-slate-700 flex items-center gap-2">
+                            <i class="fa-solid ${s.icon} text-slate-400"></i> ${s.name}
+                        </span>
+                        <span class="bg-slate-200 text-slate-700 font-bold px-2 py-0.5 rounded-md text-[10px]">Ativo</span>
+                    </div>
+                `;
+            });
+        }
+
+        function renderUsersTable() {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+
+            systemUsers.forEach((u, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-slate-800">${u.name}</td>
+                    <td class="p-3 text-slate-600"><span class="bg-slate-100 px-2 py-0.5 rounded text-[11px] font-mono">${u.login}</span></td>
+                    <td class="p-3"><span class="bg-rose-100 text-rose-700 font-semibold px-2.5 py-0.5 rounded-full text-[10px]">${u.sector}</span></td>
+                    <td class="p-3 text-slate-600">${u.phone || '-'}</td>
+                    <td class="p-3 text-slate-400 text-[11px]">${u.dateTime || '-'}</td>
+                    <td class="p-3 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="editUser(${idx})" title="Editar Usuário" class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white transition flex items-center justify-center">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="deleteUser(${idx})" title="Excluir Usuário" class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white transition flex items-center justify-center">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function deleteUser(idx) {
+            if (systemUsers[idx].login.toLowerCase() === 'admin') {
+                showCustomAlert("Ação Bloqueada", "Não é possível excluir o usuário Administrador principal do sistema.", "error");
+                return;
+            }
+            systemUsers.splice(idx, 1);
+            localStorage.setItem('maternidade_users', JSON.stringify(systemUsers));
+            renderUsersTable();
+            renderAdminMetrics();
+            showCustomAlert("Sucesso", "Usuário removido com sucesso!", "success");
+        }
+
+        function editUser(idx) {
+            const u = systemUsers[idx];
+            switchToRegisterView();
+            document.getElementById('regName').value = u.name;
+            document.getElementById('regSector').value = u.sector;
+            document.getElementById('regPhone').value = u.phone;
+            document.getElementById('regLogin').value = u.login;
+            document.getElementById('regPass').value = u.pass;
+        }
+
+        function openSectorModule(sectorKey) {
+            document.getElementById('homeCardsView').classList.add('hidden-view');
+            document.getElementById('adminDashboardModule').classList.add('hidden-view');
+            document.getElementById('patientRegisterModule').classList.add('hidden-view');
+            document.getElementById('riskTriageModule').classList.add('hidden-view');
+            document.getElementById('genericSectorView').classList.add('hidden-view');
+
+            if (sectorKey === 'Registro') {
+                document.getElementById('patientRegisterModule').classList.remove('hidden-view');
+            } else if (sectorKey === 'Classificação de Risco') {
+                document.getElementById('riskTriageModule').classList.remove('hidden-view');
+                renderTriageTable();
+            } else {
+                document.getElementById('genericSectorTitle').textContent = sectorKey;
+                document.getElementById('genericSectorView').classList.remove('hidden-view');
+            }
+        }
+
+        function openPatientRegisterModule() {
+            if (isFullAccessUser() || (currentUser && currentUser.sector === 'Registro')) {
+                openSectorModule('Registro');
+            } else {
+                showTiAlertModal();
+            }
+        }
+
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('patPhotoPreview');
+                    const placeholder = document.getElementById('patPhotoPlaceholder');
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function calculateAge(birthValStr) {
+            const birthVal = birthValStr || document.getElementById('patBirthDate').value;
+            const label = document.getElementById('patAgeLabel');
+            if (!birthVal) {
+                if (label) label.textContent = "";
+                return "";
+            }
+            const birth = new Date(birthVal);
+            const today = new Date();
+            let age = today.getFullYear() - birth.getFullYear();
+            const m = today.getMonth() - birth.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            if (label && !birthValStr) label.textContent = `(${age} anos)`;
+            return `${age} anos`;
+        }
+
+        function handleSavePatient(e) {
+            e.preventDefault();
+            const photoSrc = document.getElementById('patPhotoPreview').src;
+            const editIdx = parseInt(document.getElementById('patientEditIndex').value);
+
+            const patientData = {
+                fullName: document.getElementById('patFullName').value,
+                socialName: document.getElementById('patSocialName').value,
+                race: document.getElementById('patRace').value,
+                guardian: document.getElementById('patGuardian').value,
+                birthDate: document.getElementById('patBirthDate').value,
+                phone: document.getElementById('patPhone').value,
+                cpf: document.getElementById('patCPF').value,
+                rg: document.getElementById('patRG').value,
+                cep: document.getElementById('patCEP').value,
+                street: document.getElementById('patStreet').value,
+                number: document.getElementById('patNumber').value,
+                neighborhood: document.getElementById('patNeighborhood').value,
+                city: document.getElementById('patCity').value,
+                dateTime: document.getElementById('patDateTime').value,
+                photo: photoSrc && !photoSrc.includes('window.location') ? photoSrc : '',
+                riskColor: editIdx >= 0 ? (patients[editIdx].riskColor || 'Pendente') : 'Pendente'
+            };
+
+            if (editIdx >= 0) {
+                patients[editIdx] = { ...patients[editIdx], ...patientData };
+            } else {
+                patients.push(patientData);
+            }
+
+            localStorage.setItem('maternidade_patients', JSON.stringify(patients));
+            clearPatientForm();
+            renderPatientTable();
+            renderTriageTable();
+            showCustomAlert("Sucesso", "Paciente salvo com sucesso!", "success");
+        }
+
+        function clearPatientForm() {
+            document.getElementById('patientForm').reset();
+            document.getElementById('patientEditIndex').value = "-1";
+            document.getElementById('patPhotoPreview').classList.add('hidden');
+            document.getElementById('patPhotoPlaceholder').classList.remove('hidden');
+            document.getElementById('patAgeLabel').textContent = "";
+            updateRegisterDateTime();
+        }
+
+        function renderPatientTable(filteredPatients = null) {
+            const tbody = document.getElementById('patientTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const list = filteredPatients || patients;
+            document.getElementById('patientCountBadge').textContent = `${list.length} Pacientes`;
+
+            list.forEach((p, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+
+                let riskBadgeClass = "bg-slate-100 text-slate-600";
+                if (p.riskColor === 'Verde') riskBadgeClass = "risk-badge-verde";
+                if (p.riskColor === 'Azul') riskBadgeClass = "risk-badge-azul";
+                if (p.riskColor === 'Amarelo') riskBadgeClass = "risk-badge-amarelo";
+                if (p.riskColor === 'Vermelho') riskBadgeClass = "risk-badge-vermelho";
+
+                tr.innerHTML = `
+                    <td class="p-3">
+                        <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center shadow-inner">
+                            ${p.photo ? `<img src="${p.photo}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-user text-slate-400"></i>`}
+                        </div>
+                    </td>
+                    <td class="p-3">
+                        <div class="font-bold text-slate-800">${p.fullName}</div>
+                        <div class="text-[10px] text-slate-400">CPF: ${p.cpf}</div>
+                    </td>
+                    <td class="p-3">${p.phone}</td>
+                    <td class="p-3">${p.guardian}</td>
+                    <td class="p-3">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase ${riskBadgeClass}">
+                            ${p.riskColor || 'Pendente'}
+                        </span>
+                    </td>
+                    <td class="p-3 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="editPatient(${idx})" title="Editar Paciente" class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white transition flex items-center justify-center shadow-sm">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="deletePatient(${idx})" title="Excluir Paciente" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white transition flex items-center justify-center shadow-sm">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function editPatient(idx) {
+            if (!isFullAccessUser()) {
+                showTiAlertModal();
+                return;
+            }
+            openSectorModule('Registro');
+            const p = patients[idx];
+            document.getElementById('patientEditIndex').value = idx;
+            document.getElementById('patFullName').value = p.fullName;
+            document.getElementById('patSocialName').value = p.socialName || '';
+            document.getElementById('patRace').value = p.race || '';
+            document.getElementById('patGuardian').value = p.guardian || '';
+            document.getElementById('patBirthDate').value = p.birthDate || '';
+            document.getElementById('patPhone').value = p.phone || '';
+            document.getElementById('patCPF').value = p.cpf || '';
+            document.getElementById('patRG').value = p.rg || '';
+            document.getElementById('patCEP').value = p.cep || '';
+            document.getElementById('patStreet').value = p.street || '';
+            document.getElementById('patNumber').value = p.number || '';
+            document.getElementById('patNeighborhood').value = p.neighborhood || '';
+            document.getElementById('patCity').value = p.city || '';
+            
+            if (p.photo) {
+                document.getElementById('patPhotoPreview').src = p.photo;
+                document.getElementById('patPhotoPreview').classList.remove('hidden');
+                document.getElementById('patPhotoPlaceholder').classList.add('hidden');
+            }
+            calculateAge();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deletePatient(idx) {
+            if (!isFullAccessUser()) {
+                showTiAlertModal();
+                return;
+            }
+            patients.splice(idx, 1);
+            localStorage.setItem('maternidade_patients', JSON.stringify(patients));
+            renderPatientTable();
+            renderTriageTable();
+            showCustomAlert("Excluído", "Registro de paciente excluído com sucesso.", "warning");
+        }
+
+        function renderTriageTable() {
+            const tbody = document.getElementById('triageTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            document.getElementById('triageCountBadge').textContent = `${patients.length} Registros`;
+
+            patients.forEach((p, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+
+                let riskBadgeClass = "bg-slate-100 text-slate-600";
+                if (p.riskColor === 'Verde') riskBadgeClass = "risk-badge-verde";
+                if (p.riskColor === 'Azul') riskBadgeClass = "risk-badge-azul";
+                if (p.riskColor === 'Amarelo') riskBadgeClass = "risk-badge-amarelo";
+                if (p.riskColor === 'Vermelho') riskBadgeClass = "risk-badge-vermelho";
+
+                const ageStr = calculateAge(p.birthDate);
+
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-slate-800">${p.fullName}</td>
+                    <td class="p-3 text-slate-500">${p.cpf}</td>
+                    <td class="p-3">${ageStr || '-'}</td>
+                    <td class="p-3">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase ${riskBadgeClass}">
+                            ${p.riskColor || 'Pendente'}
+                        </span>
+                    </td>
+                    <td class="p-3 font-semibold text-slate-700">${p.medicalRoom || '-'}</td>
+                    <td class="p-3 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="openClassifyForm(${idx})" title="Classificar Paciente" class="px-2.5 py-1 rounded-xl bg-rose-600 text-white hover:bg-rose-700 transition font-semibold text-[11px] flex items-center gap-1">
+                                <i class="fa-solid fa-stethoscope"></i> Classificar
+                            </button>
+                            <button onclick="printTriagePDFDirect(${idx})" title="Imprimir PDF Completo" class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition flex items-center justify-center shadow-sm">
+                                <i class="fa-solid fa-print"></i>
+                            </button>
+                            <button onclick="editPatient(${idx})" title="Editar Paciente" class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white transition flex items-center justify-center shadow-sm">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="deletePatient(${idx})" title="Excluir Paciente" class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white transition flex items-center justify-center shadow-sm">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openClassifyForm(idx) {
+            const p = patients[idx];
+            document.getElementById('triagePatientIndex').value = idx;
+            document.getElementById('triagePatientName').textContent = p.fullName;
+            document.getElementById('triageFormCard').classList.remove('hidden');
+
+            document.getElementById('trgSymptoms').value = p.symptoms || '';
+            document.getElementById('trgBP').value = p.bp || '';
+            document.getElementById('trgWeight').value = p.weight || '';
+            document.getElementById('trgHeight').value = p.height || '';
+            document.getElementById('trgMedicalRoom').value = p.medicalRoom || '';
+
+            const radios = document.getElementsByName('trgColor');
+            radios.forEach(r => {
+                r.checked = (r.value === p.riskColor);
+            });
+
+            updateRegisterDateTime();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function closeTriageForm() {
+            document.getElementById('triageFormCard').classList.add('hidden');
+        }
+
+        function handleSaveTriage(e) {
+            e.preventDefault();
+            const idx = parseInt(document.getElementById('triagePatientIndex').value);
+            if (idx < 0) return;
+
+            const selectedColorElem = document.querySelector('input[name="trgColor"]:checked');
+            if (!selectedColorElem) {
+                showCustomAlert("Atenção", "Selecione uma cor para a classificação de risco!", "warning");
+                return;
+            }
+
+            patients[idx].symptoms = document.getElementById('trgSymptoms').value;
+            patients[idx].bp = document.getElementById('trgBP').value;
+            patients[idx].weight = document.getElementById('trgWeight').value;
+            patients[idx].height = document.getElementById('trgHeight').value;
+            patients[idx].riskColor = selectedColorElem.value;
+            patients[idx].medicalRoom = document.getElementById('trgMedicalRoom').value;
+            patients[idx].triageDateTime = document.getElementById('trgDateTime').value;
+
+            localStorage.setItem('maternidade_patients', JSON.stringify(patients));
+            renderPatientTable();
+            renderTriageTable();
+            closeTriageForm();
+            showCustomAlert("Sucesso", "Classificação de risco salva com sucesso!", "success");
+        }
+
+        function printTriagePDFDirect(idx) {
+            generateCompletePatientPDF(patients[idx]);
+        }
+
+        function printTriagePDF() {
+            const idx = parseInt(document.getElementById('triagePatientIndex').value);
+            if (idx < 0) {
+                showCustomAlert("Atenção", "Selecione um paciente para imprimir!", "warning");
+                return;
+            }
+            generateCompletePatientPDF(patients[idx]);
+        }
+
+        function generateCompletePatientPDF(p) {
+            if (!p) return;
+
+            const printArea = document.getElementById('pdfPrintArea');
+            printArea.innerHTML = `
+                <div style="font-family: Arial, sans-serif; padding: 24px; color: #1e293b; background: #ffffff;">
+                    <!-- HEADER -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #f43f5e; padding-bottom: 12px; margin-bottom: 20px;">
+                        <div>
+                            <h1 style="color: #e11d48; margin: 0; font-size: 22px; font-weight: 800;">MATERNIDADE SAÚDE +</h1>
+                            <p style="margin: 3px 0 0 0; color: #64748b; font-size: 11px;">Prontuário Médico e Ficha de Classificação de Risco</p>
+                        </div>
+                        <div style="text-align: right; font-size: 10px; color: #64748b;">
+                            <p style="margin:0;">Data do Documento: ${new Date().toLocaleString('pt-BR')}</p>
+                            <p style="margin:2px 0 0 0;">Status: <strong style="color:#e11d48;">${p.riskColor || 'PENDENTE'}</strong></p>
+                        </div>
+                    </div>
+
+                    <!-- PACIENTE E FOTO -->
+                    <div style="display: flex; gap: 20px; margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                        <div style="width: 100px; height: 120px; background: #e2e8f0; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            ${p.photo ? `<img src="${p.photo}" style="width:100%; height:100%; object-fit:cover;">` : `<span style="font-size:10px; color:#94a3b8; text-align:center;">SEM FOTO</span>`}
+                        </div>
+                        <div style="flex: 1; font-size: 11px; line-height: 1.6;">
+                            <h2 style="margin: 0 0 8px 0; font-size: 16px; color: #0f172a;">${p.fullName}</h2>
+                            <p style="margin:0;"><strong>Nome Social:</strong> ${p.socialName || 'Não Informado'}</p>
+                            <p style="margin:0;"><strong>CPF:</strong> ${p.cpf} | <strong>RG:</strong> ${p.rg}</p>
+                            <p style="margin:0;"><strong>Data de Nasc.:</strong> ${p.birthDate || '-'} (${calculateAge(p.birthDate)})</p>
+                            <p style="margin:0;"><strong>Raça/Cor:</strong> ${p.race || '-'} | <strong>Telefone:</strong> ${p.phone}</p>
+                            <p style="margin:0;"><strong>Responsável Legal:</strong> ${p.guardian}</p>
+                        </div>
+                    </div>
+
+                    <!-- ENDEREÇO -->
+                    <div style="margin-bottom: 20px; font-size: 11px; background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <h3 style="margin: 0 0 8px 0; font-size: 12px; color: #e11d48; text-transform: uppercase;">1. Endereço e Localização</h3>
+                        <p style="margin:0;"><strong>Logradouro:</strong> ${p.street || '-'}, Nº ${p.number || '-'}</p>
+                        <p style="margin:0;"><strong>Bairro:</strong> ${p.neighborhood || '-'} | <strong>Cidade:</strong> ${p.city || '-'} | <strong>CEP:</strong> ${p.cep || '-'}</p>
+                    </div>
+
+                    <!-- DADOS DA TRIAGEM E CLASSIFICAÇÃO -->
+                    <div style="margin-bottom: 20px; font-size: 11px; background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <h3 style="margin: 0 0 8px 0; font-size: 12px; color: #e11d48; text-transform: uppercase;">2. Avaliação de Triagem Médica</h3>
+                        <p style="margin:0 0 6px 0;"><strong>Sintomas / Queixa Principal:</strong> ${p.symptoms || 'Aguardando avaliação'}</p>
+                        <div style="display: flex; gap: 15px; margin-top: 8px; background: #f1f5f9; padding: 8px; border-radius: 6px;">
+                            <span><strong>Pressão Arterial:</strong> ${p.bp || '-'}</span>
+                            <span><strong>Peso:</strong> ${p.weight ? p.weight + ' kg' : '-'}</span>
+                            <span><strong>Altura:</strong> ${p.height ? p.height + ' m' : '-'}</span>
+                            <span><strong>Data/Hora Triagem:</strong> ${p.triageDateTime || '-'}</span>
+                        </div>
+                    </div>
+
+                    <!-- DESTINO E ENCAMINHAMENTO -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: #fff1f2; padding: 12px 16px; border-radius: 8px; border: 1px solid #fecdd3;">
+                        <div>
+                            <span style="font-size: 11px; color: #9f1239; font-weight: bold; display: block;">CLASSIFICAÇÃO DE RISCO ATRIBUÍDA</span>
+                            <span style="font-size: 18px; font-weight: 900; color: #e11d48; text-transform: uppercase;">${p.riskColor || 'PENDENTE'}</span>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="font-size: 11px; color: #9f1239; font-weight: bold; display: block;">SALA DE ENCAMINHAMENTO</span>
+                            <span style="font-size: 16px; font-weight: 800; color: #0284c7;">${p.medicalRoom || 'Aguardando Atribuição'}</span>
+                        </div>
+                    </div>
+
+                    <!-- ASSINATURA -->
+                    <div style="margin-top: 50px; text-align: center; font-size: 10px; color: #64748b;">
+                        <div style="width: 200px; border-bottom: 1px solid #cbd5e1; margin: 0 auto 6px auto;"></div>
+                        <p style="margin: 0;">Assinatura do Profissional Responsável / TI Maternidade Saúde +</p>
+                    </div>
+                </div>
+            `;
+
+            printArea.classList.remove('hidden');
+
+            const opt = {
+                margin: 8,
+                filename: `prontuario_${p.fullName.replace(/\s+/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(printArea).save().then(() => {
+                printArea.classList.add('hidden');
+            });
+        }
+
+        function filterPatientList() {
+            const query = document.getElementById('globalSearchInput').value.toLowerCase().trim();
+            const filtered = patients.filter(p => 
+                p.fullName.toLowerCase().includes(query) || 
+                p.cpf.replaceAll('.','').replaceAll('-','').includes(query.replaceAll('.','').replaceAll('-',''))
+            );
+            renderPatientTable(filtered);
+        }
+
+        function maskPhone(i) {
+            let v = i.value.replace(/\D/g, "");
+            v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
+            v = v.replace(/(\d)(\d{4})$/, "$1-$2");
+            i.value = v;
+        }
+
+        function maskCPF(i) {
+            let v = i.value.replace(/\D/g, "");
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+            i.value = v;
+        }
+
+        function maskRG(i) {
+            let v = i.value.replace(/\D/g, "");
+            v = v.replace(/(\d{2})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d{1})$/, "$1-$2");
+            i.value = v;
+        }
+
+        function maskCEP(i) {
+            let v = i.value.replace(/\D/g, "");
+            v = v.replace(/^(\d{5})(\d)/, "$1-$2");
+            i.value = v;
+        }
+
+        function fetchAddressByCEP() {
+            const cep = document.getElementById('patCEP').value.replace(/\D/g, '');
+            if (cep.length === 8) {
+                fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data.erro) {
+                            document.getElementById('patStreet').value = data.logradouro || '';
+                            document.getElementById('patNeighborhood').value = data.bairro || '';
+                            document.getElementById('patCity').value = data.localidade || '';
+                        }
+                    })
+                    .catch(err => console.error(err));
+            }
+        }
+    </script>
+</body>
+</html>
