@@ -19,53 +19,30 @@
             animation: pulse-pink 1.5s infinite ease-in-out;
         }
 
-        @keyframes float-stork {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-12px) rotate(2deg); }
-        }
-        .animate-stork {
-            animation: float-stork 4s infinite ease-in-out;
-        }
-
-        /* Animação do Batimento das Asas */
-        @keyframes flap-wing-left {
-            0%, 100% { transform: rotate(0deg) scaleY(1); }
-            50% { transform: rotate(-35deg) skewX(-15deg) scaleY(0.75); }
-        }
-        @keyframes flap-wing-right {
-            0%, 100% { transform: rotate(0deg) scaleY(1); }
-            50% { transform: rotate(35deg) skewX(15deg) scaleY(0.75); }
-        }
-        .wing-left {
-            animation: flap-wing-left 0.8s infinite ease-in-out;
-            transform-origin: 90px 115px;
-        }
-        .wing-right {
-            animation: flap-wing-right 0.8s infinite ease-in-out;
-            transform-origin: 100px 115px;
-        }
-
-        @keyframes drift-cloud-slow {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(300%); }
-        }
-        @keyframes drift-cloud-fast {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(350%); }
-        }
-        .animate-cloud-slow {
-            animation: drift-cloud-slow 25s linear infinite;
-        }
-        .animate-cloud-fast {
-            animation: drift-cloud-fast 16s linear infinite;
-        }
-
         .risk-badge-verde { background-color: #22c55e; color: white; }
         .risk-badge-azul { background-color: #3b82f6; color: white; }
         .risk-badge-amarelo { background-color: #eab308; color: black; }
         .risk-badge-vermelho { background-color: #ef4444; color: white; }
 
         .hidden-view { display: none !important; }
+
+        /* Estilos Otimizados para Alta Resolução / HD Smooth Render */
+        .bg-auth-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            transition: opacity 0.5s ease-in-out;
+            /* Suavização de renderização HD em navegadores modernos */
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            image-rendering: smooth;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
     </style>
 </head>
 <body class="bg-slate-100 font-sans min-h-screen text-slate-800 flex flex-col">
@@ -109,200 +86,144 @@
     <div id="appContainer" class="flex-1 flex flex-col min-h-screen">
 
         <!-- AUTH SCREEN -->
-        <div id="authScreen" class="flex-1 flex items-center justify-center p-4 bg-gradient-to-br from-rose-50 via-slate-50 to-pink-100">
-            <div class="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-rose-100/50 flex flex-col md:flex-row min-h-[620px] relative">
+        <div id="authScreen" class="flex-1 flex items-center justify-center p-4 relative min-h-screen bg-slate-100 overflow-hidden">
+            
+            <!-- IMAGEM DE FUNDO 100% DA TELA - ALTA RESOLUÇÃO COM FALLBACK SVG HD -->
+            <img id="bgAuthImage" src="img/esquerdo.jpg" onError="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'1920\' height=\'1080\' viewBox=\'0 0 1920 1080\'><defs><linearGradient id=\'grad1\' x1=\'0%\' y1=\'0%\' x2=\'100%\' y2=\'100%\'><stop offset=\'0%\' style=\'stop-color:%23fff1f2;stop-opacity:1\' /><stop offset=\'100%\' style=\'stop-color:%23fecdd3;stop-opacity:1\' /></linearGradient></defs><rect width=\'100%\' height=\'100%\' fill=\'url(%23grad1)\'/></svg>'" alt="Plano de Fundo" class="bg-auth-img">
+
+            <!-- FORM CARD CONTAINER -->
+            <div class="w-full max-w-md bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-8 md:p-10 border border-white/40 relative z-10 transition-all duration-700 my-auto">
                 
-                <!-- STORK BRANDING PANEL -->
-                <div id="storkPanel" class="w-full md:w-1/2 bg-gradient-to-b from-sky-400 via-sky-300 to-rose-200 p-8 flex flex-col items-center justify-center text-white relative overflow-hidden transition-all duration-700 order-1">
-                    <div class="absolute inset-0 pointer-events-none opacity-40">
-                        <div class="absolute top-10 left-0 animate-cloud-slow">
-                            <i class="fa-solid fa-cloud text-white text-6xl"></i>
+                <!-- LOGIN FORM -->
+                <div id="loginFormContainer" class="w-full">
+                    <div class="text-center mb-6">
+                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-rose-100 text-rose-600 mb-2">
+                            <i class="fa-solid fa-lock text-xl"></i>
                         </div>
-                        <div class="absolute top-36 left-0 animate-cloud-fast">
-                            <i class="fa-solid fa-cloud text-white text-4xl"></i>
-                        </div>
-                        <div class="absolute bottom-16 left-0 animate-cloud-slow" style="animation-delay: -10s;">
-                            <i class="fa-solid fa-cloud text-white text-5xl"></i>
-                        </div>
+                        <h1 class="text-2xl font-black text-slate-800 tracking-tight">Maternidade Saúde <span class="text-rose-500">+</span></h1>
+                        <h2 class="text-sm font-bold text-slate-600 mt-1">Acesso Restrito</h2>
+                        <p class="text-slate-500 text-xs mt-0.5">Informe suas credenciais para continuar</p>
                     </div>
 
-                    <div class="text-center z-10 relative">
-                        <div class="animate-stork mb-6 inline-block drop-shadow-2xl">
-                            <svg class="w-52 h-52 md:w-64 md:h-64 mx-auto" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <!-- Corpo da Cegonha -->
-                                <path d="M 50 110 Q 70 140 100 125 Q 130 110 160 110 L 150 125 Q 110 120 80 140 Q 55 145 50 110 Z" fill="#ffffff" filter="drop-shadow(0px 4px 6px rgba(0,0,0,0.1))"/>
-                                <!-- Cauda / Penas Pretas -->
-                                <path d="M 120 105 L 175 75 L 180 82 L 130 115 Z" fill="#1e293b"/>
-                                <!-- Pescoço e Cabeça -->
-                                <path d="M 55 115 Q 25 105 35 70 Q 40 50 55 50 Q 65 65 60 85 Z" fill="#ffffff"/>
-                                <circle cx="52" cy="58" r="12" fill="#ffffff"/>
-                                <circle cx="50" cy="56" r="2.5" fill="#1e293b"/>
-                                <!-- Bico -->
-                                <path d="M 42 60 L 10 66 L 42 72 Z" fill="#f97316"/>
-                                <!-- Pernas -->
-                                <path d="M 80 130 L 85 175 L 78 175 L 75 132 Z" fill="#ea580c"/>
-                                <path d="M 95 126 L 100 175 L 93 175 L 90 128 Z" fill="#ea580c"/>
-                                
-                                <!-- Asa Esquerda Animada -->
-                                <g class="wing-left">
-                                    <path d="M 85 115 Q 40 80 15 35 Q 50 45 95 95 Z" fill="#ffffff" filter="drop-shadow(-2px 2px 3px rgba(0,0,0,0.15))"/>
-                                    <path d="M 35 50 Q 25 40 15 35 Q 35 55 55 70 Z" fill="#1e293b"/>
-                                </g>
-
-                                <!-- Asa Direita Animada -->
-                                <g class="wing-right">
-                                    <path d="M 95 115 Q 135 70 175 25 Q 145 45 90 95 Z" fill="#f8fafc" filter="drop-shadow(2px 2px 3px rgba(0,0,0,0.15))"/>
-                                    <path d="M 150 40 Q 165 30 175 25 Q 150 55 125 75 Z" fill="#1e293b"/>
-                                </g>
-
-                                <!-- Trouxinha / Bebê -->
-                                <g transform="translate(18, 68)">
-                                    <path d="M -10 0 Q 0 35 15 0 Z" fill="#38bdf8"/>
-                                    <circle cx="2" cy="8" r="7" fill="#fde047"/>
-                                    <circle cx="0" cy="6" r="1.2" fill="#1e293b"/>
-                                    <circle cx="4" cy="6" r="1.2" fill="#1e293b"/>
-                                    <path d="M 0 10 Q 2 12 4 10" stroke="#1e293b" stroke-width="1" fill="none"/>
-                                </g>
-                            </svg>
-                        </div>
-                        <h1 class="text-3xl font-extrabold tracking-tight mb-2 text-slate-900 drop-shadow-sm flex items-center justify-center whitespace-nowrap">
-                            Maternidade Saúde <span class="text-rose-600 ml-1">+</span>
-                        </h1>
-                        <p class="text-slate-700 font-medium text-xs max-w-xs mx-auto drop-shadow-sm">
-                            Cuidado maternal e tecnologia a serviço da vida.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- FORM PANEL -->
-                <div id="formPanel" class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center order-2 transition-all duration-700">
-                    
-                    <!-- LOGIN FORM -->
-                    <div id="loginFormContainer" class="w-full max-w-md mx-auto">
-                        <div class="text-center mb-6">
-                            <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-rose-100 text-rose-600 mb-2">
-                                <i class="fa-solid fa-lock text-xl"></i>
+                    <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Usuário</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-rose-500">
+                                    <i class="fa-solid fa-user"></i>
+                                </div>
+                                <input type="text" id="loginUser" required placeholder="Digite seu usuário"
+                                    class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-400 focus:outline-none transition text-sm">
                             </div>
-                            <h2 class="text-2xl font-bold text-slate-800">Acesso Restrito</h2>
-                            <p class="text-slate-500 text-xs mt-1">Informe suas credenciais para continuar</p>
                         </div>
 
-                        <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Usuário</label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-rose-500">
-                                        <i class="fa-solid fa-user"></i>
-                                    </div>
-                                    <input type="text" id="loginUser" required placeholder="Digite seu usuário"
-                                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-400 focus:outline-none transition text-sm">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Senha</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-amber-500">
+                                    <i class="fa-solid fa-key"></i>
                                 </div>
+                                <input type="password" id="loginPass" required placeholder="Digite sua senha"
+                                    class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-400 focus:outline-none transition text-sm">
+                                <button type="button" onclick="togglePasswordVisibility('loginPass', 'eyeIconLogin')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
+                                    <i id="eyeIconLogin" class="fa-solid fa-eye"></i>
+                                </button>
                             </div>
-
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Senha</label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-amber-500">
-                                        <i class="fa-solid fa-key"></i>
-                                    </div>
-                                    <input type="password" id="loginPass" required placeholder="Digite sua senha"
-                                        class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-400 focus:outline-none transition text-sm">
-                                    <button type="button" onclick="togglePasswordVisibility('loginPass', 'eyeIconLogin')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
-                                        <i id="eyeIconLogin" class="fa-solid fa-eye"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between text-xs pt-1">
-                                <button type="button" onclick="showForgotPasswordAlert()" class="text-rose-600 hover:underline font-medium">
+                            
+                            <div class="text-right pt-1">
+                                <button type="button" onclick="showForgotPasswordAlert()" class="text-[10px] text-rose-600 hover:underline font-medium">
                                     Esqueceu a senha?
                                 </button>
-                                <button type="button" onclick="switchToRegisterView()" class="text-slate-500 hover:text-rose-600 font-medium">
-                                    Se cadastrar? <span class="text-rose-600 underline font-bold cursor-pointer">Clique aqui!</span>
-                                </button>
                             </div>
-
-                            <button type="submit" class="w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition transform active:scale-[0.98] text-sm mt-2">
-                                Entrar no Sistema
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- REGISTER FORM -->
-                    <div id="registerFormContainer" class="w-full max-w-md mx-auto hidden">
-                        <div class="text-center mb-4">
-                            <h2 class="text-2xl font-bold text-slate-800">Novo Cadastro</h2>
-                            <p class="text-slate-500 text-xs">Preencha todos os campos obrigatórios</p>
                         </div>
 
-                        <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-0.5">Nome Completo *</label>
-                                <input type="text" id="regName" required placeholder="Nome completo"
-                                    class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-rose-400 outline-none">
-                            </div>
+                        <div class="text-center pt-2">
+                            <button type="button" onclick="switchToRegisterView()" class="text-xs text-slate-500 hover:text-rose-600 font-medium">
+                                Se cadastrar? <span class="text-rose-600 underline font-bold cursor-pointer">Clique aqui!</span>
+                            </button>
+                        </div>
 
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-600 mb-0.5">Setor *</label>
-                                    <select id="regSector" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-rose-400 outline-none">
-                                        <option value="">Selecione...</option>
-                                        <option value="Registro">Registro</option>
-                                        <option value="Classificação de Risco">Classificação de Risco</option>
-                                        <option value="TI">TI</option>
-                                        <option value="Médico">Médico</option>
-                                        <option value="Enfermagem">Enfermagem</option>
-                                        <option value="Acalanto">Acalanto</option>
-                                        <option value="Cegonha">Cegonha</option>
-                                        <option value="Obstetra">Obstetra</option>
-                                        <option value="Anestesista">Anestesista</option>
-                                        <option value="Segurança">Segurança</option>
-                                        <option value="Ambulatório">Ambulatório</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-600 mb-0.5">Telefone *</label>
-                                    <input type="text" id="regPhone" required placeholder="(21) 99999-9999" oninput="maskPhone(this)"
-                                        class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-rose-400 outline-none">
-                                </div>
-                            </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition transform active:scale-[0.98] text-sm mt-2">
+                            Entrar no Sistema
+                        </button>
+                    </form>
+                </div>
 
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-0.5">Data e Hora do Cadastro</label>
-                                <input type="text" id="regDateTime" readonly class="w-full px-3 py-1.5 bg-slate-100 text-slate-500 border border-slate-200 rounded-lg text-xs">
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-600 mb-0.5">Login *</label>
-                                    <input type="text" id="regLogin" required placeholder="Usuário"
-                                        class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-rose-400 outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-600 mb-0.5">Senha *</label>
-                                    <input type="password" id="regPass" required placeholder="Senha"
-                                        class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-rose-400 outline-none">
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-semibold text-rose-600 mb-0.5">Senha do Admin (Autorização) *</label>
-                                <input type="password" id="regAdminPass" required placeholder="Digite a senha do Admin (123)"
-                                    class="w-full px-3 py-1.5 bg-rose-50/50 border border-rose-200 rounded-lg text-xs focus:ring-2 focus:ring-rose-400 outline-none">
-                            </div>
-
-                            <div class="flex items-center justify-between pt-2">
-                                <button type="button" onclick="switchToLoginView()" class="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1">
-                                    <i class="fa-solid fa-arrow-left"></i> Voltar ao Login
-                                </button>
-                                <button type="submit" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow transition">
-                                    Efetuar Cadastro
-                                </button>
-                            </div>
-                        </form>
+                <!-- REGISTER FORM -->
+                <div id="registerFormContainer" class="w-full hidden">
+                    <div class="text-center mb-4">
+                        <h1 class="text-xl font-black text-slate-800 tracking-tight">Maternidade Saúde <span class="text-rose-500">+</span></h1>
+                        <h2 class="text-lg font-bold text-slate-700">Novo Cadastro</h2>
+                        <p class="text-slate-500 text-xs">Preencha todos os campos obrigatórios</p>
                     </div>
 
+                    <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-0.5">Nome Completo *</label>
+                            <input type="text" id="regName" required placeholder="Nome completo"
+                                class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-0.5">Setor *</label>
+                                <select id="regSector" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                                    <option value="">Selecione...</option>
+                                    <option value="Registro">Registro</option>
+                                    <option value="Classificação de Risco">Classificação de Risco</option>
+                                    <option value="TI">TI</option>
+                                    <option value="Médico">Médico</option>
+                                    <option value="Enfermagem">Enfermagem</option>
+                                    <option value="Acalanto">Acalanto</option>
+                                    <option value="Cegonha">Cegonha</option>
+                                    <option value="Obstetra">Obstetra</option>
+                                    <option value="Anestesista">Anestesista</option>
+                                    <option value="Segurança">Segurança</option>
+                                    <option value="Ambulatório">Ambulatório</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-0.5">Telefone *</label>
+                                <input type="text" id="regPhone" required placeholder="(21) 99999-9999" oninput="maskPhone(this)"
+                                    class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-0.5">Data e Hora do Cadastro</label>
+                            <input type="text" id="regDateTime" readonly class="w-full px-3 py-1.5 bg-slate-100 text-slate-500 border border-slate-200 rounded-lg text-xs">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-0.5">Login *</label>
+                                <input type="text" id="regLogin" required placeholder="Usuário"
+                                    class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-0.5">Senha *</label>
+                                <input type="password" id="regPass" required placeholder="Senha"
+                                    class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-rose-600 mb-0.5">Senha do Admin (Autorização) *</label>
+                            <input type="password" id="regAdminPass" required placeholder="Digite a senha do Admin (123)"
+                                class="w-full px-3 py-1.5 bg-rose-50/50 border border-rose-200 rounded-lg text-xs focus:ring-2 focus:ring-rose-400 outline-none">
+                        </div>
+
+                        <div class="flex items-center justify-between pt-2">
+                            <button type="button" onclick="switchToLoginView()" class="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1">
+                                <i class="fa-solid fa-arrow-left"></i> Voltar ao Login
+                            </button>
+                            <button type="submit" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow transition">
+                                Efetuar Cadastro
+                            </button>
+                        </div>
+                    </form>
                 </div>
+
             </div>
         </div>
 
@@ -315,23 +236,24 @@
                     
                     <div class="flex items-center gap-2 cursor-pointer flex-shrink-0" onclick="showHomeDashboard()">
                         <i class="fa-solid fa-heart text-pink-500 text-2xl animate-heart-pulse"></i>
-                        <span class="font-extrabold text-lg sm:text-xl text-slate-800 tracking-tight flex flex-nowrap items-center whitespace-nowrap">
+                        <span class="font-extrabold text-base sm:text-xl text-slate-800 tracking-tight flex flex-nowrap items-center whitespace-nowrap">
                             Maternidade Saúde <span class="text-rose-500 ml-1">+</span>
                         </span>
                     </div>
 
-                    <div class="flex-1 max-w-xs sm:max-w-md mx-2">
+                    <div class="flex-1 max-w-[150px] sm:max-w-md mx-2">
                         <div class="relative">
-                            <input type="text" id="globalSearchInput" onkeyup="filterPatientList()" placeholder="Pesquisar por CPF ou Nome..."
-                                class="w-full pl-9 pr-4 py-1.5 bg-slate-100 border border-slate-200 rounded-full text-xs focus:ring-2 focus:ring-rose-400 focus:bg-white outline-none transition">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <input type="text" id="globalSearchInput" onkeyup="filterPatientList()" placeholder="Pesquisar..."
+                                class="w-full pl-8 sm:pl-9 pr-3 sm:pr-4 py-1.5 bg-slate-100 border border-slate-200 rounded-full text-xs focus:ring-2 focus:ring-rose-400 focus:bg-white outline-none transition">
+                            <div class="absolute inset-y-0 left-0 pl-2.5 sm:pl-3 flex items-center pointer-events-none text-slate-400">
                                 <i class="fa-solid fa-magnifying-glass text-xs"></i>
                             </div>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+                    <div class="flex items-center gap-2 sm:gap-4 flex-shrink-0">
                         
+                        <!-- DESKTOP NAV -->
                         <div class="hidden lg:flex items-center gap-4 text-xs font-medium text-slate-600">
                             <button onclick="showHomeDashboard()" class="hover:text-rose-600 flex items-center gap-1.5">
                                 <i class="fa-solid fa-house"></i> Home
@@ -372,12 +294,47 @@
                             </div>
                         </div>
 
+                        <!-- MOBILE MENU BUTTON -->
+                        <button onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-xl bg-slate-100 hover:bg-rose-100 text-slate-700 hover:text-rose-600 transition">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </button>
+
                         <button onclick="handleLogout()" class="bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-600 p-2 rounded-xl transition text-xs font-semibold flex items-center gap-1.5">
                             <i class="fa-solid fa-right-from-bracket"></i>
                             <span class="hidden sm:inline">Sair</span>
                         </button>
                     </div>
 
+                </div>
+
+                <!-- MOBILE DROPDOWN MENU PANEL -->
+                <div id="mobileMenuPanel" class="hidden lg:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-4 space-y-2 shadow-md">
+                    <div class="sm:hidden pb-2 border-b border-slate-100 mb-2">
+                        <div class="text-[10px] text-slate-400 uppercase font-semibold">Seja bem-vindo</div>
+                        <div class="text-xs font-bold text-slate-700 flex items-center gap-1" id="navUserNameMobile">
+                            Usuario <span id="navUserSectorBadgeMobile" class="bg-rose-100 text-rose-700 text-[10px] px-1.5 py-0.5 rounded-md font-semibold">Setor</span>
+                        </div>
+                    </div>
+
+                    <button onclick="showHomeDashboard(); toggleMobileMenu();" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-rose-50 hover:text-rose-600 rounded-xl flex items-center gap-2">
+                        <i class="fa-solid fa-house text-rose-500"></i> Home
+                    </button>
+
+                    <button id="adminNavBtnMobile" onclick="openAdminDashboard(); toggleMobileMenu();" class="w-full text-left px-3 py-2 text-xs font-bold text-amber-600 hover:bg-amber-50 rounded-xl flex items-center gap-2 hidden">
+                        <i class="fa-solid fa-chart-line text-amber-600"></i> Painel Administrador
+                    </button>
+
+                    <button onclick="openPatientRegisterModule(); toggleMobileMenu();" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-rose-50 hover:text-rose-600 rounded-xl flex items-center gap-2">
+                        <i class="fa-solid fa-hospital-user text-rose-500"></i> Cadastro de Paciente
+                    </button>
+
+                    <button onclick="showTiAlertModal(); toggleMobileMenu();" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-rose-50 hover:text-rose-600 rounded-xl flex items-center gap-2">
+                        <i class="fa-solid fa-headset text-rose-500"></i> Suporte TI (21 99028-8979)
+                    </button>
+
+                    <button onclick="handleLogout()" class="w-full text-left px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-xl flex items-center gap-2 border-t border-slate-100 pt-2 mt-1">
+                        <i class="fa-solid fa-right-from-bracket text-rose-500"></i> Sair
+                    </button>
                 </div>
             </header>
 
@@ -457,7 +414,6 @@
 
                     <!-- ANALYTICS DISTRIBUTION BAR -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- RISK CLASSIFICATION STATS -->
                         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                             <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
                                 <i class="fa-solid fa-chart-pie text-rose-500"></i> Distribuição por Classificação de Risco
@@ -502,7 +458,6 @@
                             </div>
                         </div>
 
-                        <!-- SECTORS ACTIVITY STATS -->
                         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                             <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
                                 <i class="fa-solid fa-network-wired text-indigo-500"></i> Resumo de Atividade dos Setores
@@ -546,7 +501,6 @@
 
                 <!-- PATIENT REGISTRATION MODULE -->
                 <div id="patientRegisterModule" class="hidden-view space-y-6">
-                    
                     <div class="flex items-center justify-between border-b border-slate-200 pb-4">
                         <div class="flex items-center gap-3">
                             <button onclick="showHomeDashboard()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 p-2 rounded-xl text-xs">
@@ -855,7 +809,7 @@
     <div id="pdfPrintArea" class="hidden p-8 bg-white font-sans text-slate-900 text-xs"></div>
 
     <script>
-        // GLOBAL STATE & LOCAL STORAGE INITIALIZATION (LocalStorage ativado para persistência de dados)
+        // GLOBAL STATE & LOCAL STORAGE INITIALIZATION
         let currentUser = null;
         let patients = JSON.parse(localStorage.getItem('maternidade_patients')) || [];
         let systemUsers = JSON.parse(localStorage.getItem('maternidade_users')) || [
@@ -879,6 +833,13 @@
             updateRegisterDateTime();
             renderCardsGrid();
         });
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenuPanel');
+            if (menu) {
+                menu.classList.toggle('hidden');
+            }
+        }
 
         function showCustomAlert(title, message, type = 'success') {
             const modal = document.getElementById('customAlertModal');
@@ -943,10 +904,20 @@
                 document.getElementById('navUserName').childNodes[0].nodeValue = currentUser.name + " ";
                 document.getElementById('navUserSectorBadge').textContent = currentUser.sector;
 
+                const mobileName = document.getElementById('navUserNameMobile');
+                if (mobileName) mobileName.childNodes[0].nodeValue = currentUser.name + " ";
+                const mobileBadge = document.getElementById('navUserSectorBadgeMobile');
+                if (mobileBadge) mobileBadge.textContent = currentUser.sector;
+
+                const adminBtn = document.getElementById('adminNavBtn');
+                const adminBtnMobile = document.getElementById('adminNavBtnMobile');
+                
                 if (isFullAccessUser()) {
-                    document.getElementById('adminNavBtn').classList.remove('hidden');
+                    if (adminBtn) adminBtn.classList.remove('hidden');
+                    if (adminBtnMobile) adminBtnMobile.classList.remove('hidden');
                 } else {
-                    document.getElementById('adminNavBtn').classList.add('hidden');
+                    if (adminBtn) adminBtn.classList.add('hidden');
+                    if (adminBtnMobile) adminBtnMobile.classList.add('hidden');
                 }
 
                 renderCardsGrid();
@@ -963,19 +934,18 @@
             document.getElementById('dashboardScreen').classList.add('hidden');
             document.getElementById('authScreen').classList.remove('hidden');
             document.getElementById('loginForm').reset();
+            switchToLoginView();
+            const menu = document.getElementById('mobileMenuPanel');
+            if (menu) menu.classList.add('hidden');
         }
 
         function switchToRegisterView() {
             document.getElementById('loginFormContainer').classList.add('hidden');
             document.getElementById('registerFormContainer').classList.remove('hidden');
             
-            const storkPanel = document.getElementById('storkPanel');
-            const formPanel = document.getElementById('formPanel');
-            
-            storkPanel.classList.remove('order-1');
-            storkPanel.classList.add('order-2');
-            formPanel.classList.remove('order-2');
-            formPanel.classList.add('order-1');
+            // Troca a imagem de fundo para img/direita.gif (100% HD)
+            const bgImg = document.getElementById('bgAuthImage');
+            bgImg.src = 'img/direita.gif';
             
             updateRegisterDateTime();
         }
@@ -984,13 +954,9 @@
             document.getElementById('registerFormContainer').classList.add('hidden');
             document.getElementById('loginFormContainer').classList.remove('hidden');
             
-            const storkPanel = document.getElementById('storkPanel');
-            const formPanel = document.getElementById('formPanel');
-            
-            storkPanel.classList.remove('order-2');
-            storkPanel.classList.add('order-1');
-            formPanel.classList.remove('order-1');
-            formPanel.classList.add('order-2');
+            // Troca a imagem de fundo para img/esquerdo.jpg (100% HD)
+            const bgImg = document.getElementById('bgAuthImage');
+            bgImg.src = 'img/esquerdo.jpg';
         }
 
         function togglePasswordVisibility(inputId, iconId) {
